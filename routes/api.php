@@ -12,7 +12,26 @@
 */
 //登录
 Route::post('/user/login', '\App\Api\LoginController@login')->name('login');
-Route::group(['middleware' => 'auth:api'], function () {
+//Route::group(['middleware' => 'auth:api'], function () {
+//关闭登录检测
+Route::group(['middleware' => 'api'], function () {
+    //部门管理
+    Route::get('/depart', '\App\Api\DepartController@index')->name('depart.view');
+
+    //医院管理
+    Route::get('/hospital', '\App\Api\HospitalController@index')->name('hospital.view');
+
+    //科室管理
+    Route::get('/department', '\App\Api\DepartmentController@index')->name('department.view');
+    //疾病管理
+    Route::get('/disease', '\App\Api\DiseaseController@index')->name('disease.view');
+    //媒体管理
+    Route::get('/media', '\App\Api\MediaController@index')->name('media.view');
+    //预约管理
+    Route::get('/patient', '\App\Api\PatientController@index')->name('patient.view');
+    //医生管理
+    Route::get('/doctor', '\App\Api\DoctorController@index')->name('doctor.view');
+
     //获取用户登录信息
     Route::get('/userinfo', '\App\Api\UserController@userInfo');
     //获取用户权限
@@ -26,41 +45,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/user/update', '\App\Api\UserController@update')->name('user.edit');
     Route::get('/user/remove', '\App\Api\UserController@destroy')->name('user.delete');
     Route::get('/user/batchremove', '\App\Api\UserController@batchremove')->name('user.delete');
-    //文章api
-    Route::get('/article', '\App\Api\ArticleController@index')->name('article.view');
-    Route::get('/checkarticlename', '\App\Api\ArticleController@checkName');
-    Route::post('/article/store', '\App\Api\ArticleController@store')->name('article.add');
-    Route::post('/article/pic', '\App\Api\ArticleController@pic');
-    Route::post('/article/update', '\App\Api\ArticleController@update')->name('article.edit');
-    Route::get('/article/remove', '\App\Api\ArticleController@destroy')->name('article.delete');
-    Route::get('/article/batchremove', '\App\Api\ArticleController@batchremove')->name('article.delete');
-    //分类管理
-    Route::get('/category', '\App\Api\CategoryController@index')->name('category.view');
-    Route::get('/categorylist', '\App\Api\CategoryController@list');
-    Route::get('/checkcatename', '\App\Api\CategoryController@checkName');
-    Route::post('/category/store', '\App\Api\CategoryController@store')->name('category.add');
-    Route::post('/category/update', '\App\Api\CategoryController@update')->name('category.edit');
-    Route::get('/category/remove', '\App\Api\CategoryController@destroy')->name('category.delete');
-    Route::get('/category/batchremove', '\App\Api\CategoryController@batchremove')->name('category.delete');
-    //标签管理
-    Route::get('/tag', '\App\Api\TagController@index')->name('tag.view');
-    Route::get('/taglist', '\App\Api\TagController@list');
-    Route::get('/checktagname', '\App\Api\TagController@checkName');
-    Route::post('/tag/store', '\App\Api\TagController@store')->name('tag.add');
-    Route::post('/tag/update', '\App\Api\TagController@update')->name('tag.edit');
-    Route::get('/tag/remove', '\App\Api\TagController@destroy')->name('tag.delete');
-    Route::get('/tag/batchremove', '\App\Api\TagController@batchremove')->name('tag.delete');
-    //链接管理
-    Route::get('/link', '\App\Api\LinkController@index')->name('link.view');
-    Route::get('/checklinkname', '\App\Api\LinkController@checkName');
-    Route::post('/link/store', '\App\Api\LinkController@store')->name('link.add');
-    Route::post('/link/update', '\App\Api\LinkController@update')->name('link.edit');
-    Route::get('/link/remove', '\App\Api\LinkController@destroy')->name('link.delete');
-    Route::get('/link/batchremove', '\App\Api\LinkController@batchremove')->name('link.delete');
-    //评论管理
-    Route::get('/comment', '\App\Api\CommentController@index');
-    Route::get('/comment/remove', '\App\Api\CommentController@destroy');
-    Route::get('/comment/batchremove', '\App\Api\CommentController@batchremove');
+
     //角色管理
     Route::get('/role', '\App\Api\RoleController@index')->name('role.view');
     Route::get('/checkrolename', '\App\Api\RoleController@checkName');
@@ -81,11 +66,4 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/log', '\App\Api\LogController@index')->name('log.view');
     Route::get('/log/remove', '\App\Api\LogController@destroy')->name('log.delete');
     Route::get('/log/batchremove', '\App\Api\LogController@batchremove')->name('log.delete');
-});
-//移动端首页
-Route::group(['middleware' => 'api'], function () {
-    Route::get('/getWapCategory', '\App\Api\HomeWapController@getWapCategory');
-    Route::get('/getWapArticle', '\App\Api\HomeWapController@getWapArticle');
-    Route::get('/getWapArticleById', '\App\Api\HomeWapController@getWapArticleById');
-    Route::get('/getWapArticleByCategory', '\App\Api\HomeWapController@getWapArticleByCategory');
 });

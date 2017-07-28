@@ -16,7 +16,8 @@ use App\Events\EventLogLogin;
 class ApiController extends Controller
 {
     use AuthenticatesUsers;
-    use Authorizable;
+    //关闭权限检测
+//    use Authorizable;
 
     //调用认证接口获取授权码
 

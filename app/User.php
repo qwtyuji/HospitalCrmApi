@@ -7,6 +7,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * Class User
+ * @package App
+ */
 class User extends Authenticatable
 {
     use Notifiable, HasRoles, HasApiTokens;
@@ -18,6 +22,9 @@ class User extends Authenticatable
      */
     protected $fillable = ['name', 'email', 'password', 'avatar', 'status'];
 
+    /**
+     * @var string
+     */
     protected $guard_name='api';
     /**
      * @param string $guard_name
@@ -42,9 +49,17 @@ class User extends Authenticatable
      */
 
 
-    public function comments()
+    public function hospital()
     {
-        return $this->hasMany(Comment::class);
+        return $this->belongsTo(Hospital::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function depart()
+    {
+        return $this->belongsTo(Depart::class);
     }
 
 }
