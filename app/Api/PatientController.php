@@ -9,6 +9,7 @@
 namespace App\Api;
 
 
+use App\Http\Requests\StorePatientRequest;
 use App\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,5 +48,25 @@ class PatientController
         $data = $this->patient->with('hospital', 'department', 'disease', 'doctor', 'user','media', 'patientRemark.user', 'patientLog.user', 'patientContent.user', 'patientCallback.user')->get();
 
         return response()->json($data);
+    }
+
+    public function store(StorePatientRequest $request)
+    {
+        
+    }
+
+    public function update()
+    {
+        
+    }
+
+    public function destroy()
+    {
+        
+    }
+
+    public function batchremove()
+    {
+
     }
 }

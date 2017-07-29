@@ -10,6 +10,7 @@ namespace App\Api;
 
 
 use App\Disease;
+use App\Http\Requests\DiseaseRequest;
 use Illuminate\Http\Request;
 
 /**
@@ -43,7 +44,52 @@ class DiseaseController
      */
     public function index()
     {
-        $data = $this->disease->get();
+        $data = $this->disease->paginate();
         return response()->json($data);
+    }
+
+
+    /**
+     * @param DiseaseRequest $request
+     * @return mixed
+     */
+    public function store(DiseaseRequest $request)
+    {
+        $data = $request->all();
+        $this->disease->create($data);
+        return $this->success('添加成功');
+    }
+
+
+    /**
+     * @param DiseaseRequest $request
+     * @return mixed
+     */
+    public function update(DiseaseRequest $request)
+    {
+        $data = $request->all();
+        $disease = $this->disease->findOrFail($request->id);
+        $disease->update($data);
+        return $this->success('修改成功');
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destory()
+    {
+        $disease = $this->disease->findOrFail($this->request->id);
+        $disease->delete();
+        return $this->success();
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function batchremove()
+    {
+        $ids = explode(',', $this->request->ids);
+        $this->disease->destroy($ids);
+        return $this->success();
     }
 }
