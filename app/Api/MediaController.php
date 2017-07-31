@@ -44,7 +44,7 @@ class MediaController
      */
     public function index()
     {
-        $data = $this->media->paginate();
+        $data = $this->media->with('hospital')->paginate();
         return response()->json($data);
     }
 
