@@ -76,7 +76,7 @@ class DiseaseController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destory()
+    public function destroy()
     {
         $disease = $this->disease->findOrFail($this->request->id);
         $disease->delete();

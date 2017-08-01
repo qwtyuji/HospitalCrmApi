@@ -13,7 +13,7 @@ class Department extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name', 'description', 'status', 'author'];
+    protected $fillable = ['name', 'description', 'status', 'author','hospital_id'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

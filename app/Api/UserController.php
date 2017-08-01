@@ -47,15 +47,9 @@ class UserController extends ApiController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function checkName()
+    public function checkUserName()
     {
-        $data = $this->request->all();
-        if (isset($data['id'])) {
-            $rs = User::where('id', '<>', $data['id'])->where('name', $data['name'])->first();
-        } else {
-            $rs = User::where('name', $data['name'])->first();
-        }
-        return $this->check($rs);
+        return $this->checkName('User');
     }
 
     /**

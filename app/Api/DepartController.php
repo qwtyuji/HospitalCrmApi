@@ -74,7 +74,7 @@ class DepartController extends ApiController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destory()
+    public function destroy()
     {
         $depart = $this->depart->findOrFail($this->request->id);
         $depart->delete();

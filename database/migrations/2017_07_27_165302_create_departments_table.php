@@ -18,7 +18,7 @@ class CreateDepartmentsTable extends Migration
             $table->unsignedInteger('hospital_id');
             $table->string('name',30);
             $table->string('description')->nullable();
-            $table->string('author')->nullable();
+            $table->string('author','30')->nullable();
             $table->unsignedTinyInteger('status')->default(1);
             $table->timestamps();
         });

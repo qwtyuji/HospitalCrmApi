@@ -13,7 +13,7 @@ class Hospital extends Model
     /**
      * @var array
      */
-    protected $fillable=['name','description','status','author'];
+    protected $fillable=['name','group','description','status','author'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -22,6 +22,7 @@ class Hospital extends Model
     {
         return $this->hasMany(Department::class);
     }
+
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough

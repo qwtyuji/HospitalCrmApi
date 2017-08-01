@@ -18,6 +18,8 @@ class CreateDoctorsTable extends Migration
             $table->unsignedInteger('department_id');
             $table->unsignedInteger('doctor_num')->nullable();
             $table->string('name');
+            $table->string('author','30')->nullable();
+            $table->string('description')->nullable();
             $table->unsignedTinyInteger('status')->default(1);
             $table->timestamps();
         });

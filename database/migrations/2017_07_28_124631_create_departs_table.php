@@ -17,7 +17,8 @@ class CreateDepartsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('pid');
             $table->string('name');
-            $table->string('author')->nullable();
+            $table->string('author','30')->nullable();
+            $table->string('description')->nullable();
             $table->unsignedTinyInteger('status')->default(1);
             $table->timestamps();
         });

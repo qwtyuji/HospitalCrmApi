@@ -19,7 +19,7 @@ class CreateDiseasesTable extends Migration
             $table->unsignedInteger('department_id')->default(0);
             $table->string('name',30);
             $table->string('description')->nullable();
-            $table->string('author')->nullable();
+            $table->string('author','30')->nullable();
             $table->unsignedTinyInteger('status')->default(1);
             $table->timestamps();
         });

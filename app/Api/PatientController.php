@@ -92,7 +92,7 @@ class PatientController extends ApiController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destory()
+    public function destroy()
     {
         $patient = $this->patient->findOrFail($this->request->id);
         $patient->delete();

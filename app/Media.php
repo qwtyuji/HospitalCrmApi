@@ -13,7 +13,7 @@ class Media extends Model
     /**
      * @var array
      */
-    protected $fillable =['name','hospital_id','status','author'];
+    protected $fillable =['name','hospital_id','status','author','description'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

@@ -16,8 +16,7 @@ use App\Events\EventLogLogin;
 class ApiController extends Controller
 {
     use AuthenticatesUsers;
-    //关闭权限检测
-//    use Authorizable;
+    use Authorizable;
 
     //调用认证接口获取授权码
 
@@ -121,5 +120,29 @@ class ApiController extends Controller
     public function check($rs)
     {
         return $rs ? $this->error() : $this->success();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function author()
+    {
+        return request()->user()->name;
+    }
+
+    /**
+     * @param $model
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkName($model)
+    {
+        $models = 'App\\'.$model;
+        $data = $this->request->all();
+        if (isset($data['id'])) {
+            $rs = $models::where('id', '<>', $data['id'])->where('name', $data['name'])->first();
+        } else {
+            $rs = $models::where('name', $data['name'])->first();
+        }
+        return $this->check($rs);
     }
 }

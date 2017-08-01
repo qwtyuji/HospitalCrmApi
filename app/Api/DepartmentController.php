@@ -37,14 +37,28 @@ class DepartmentController extends ApiController
     {
         $this->request = $request;
         $this->department = $department;
+
     }
+
 
     /**
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        $data = $this->department->with('doctor', 'disease')->paginate();
+        $keyword = $this->request->keyword;
+        if ($keyword) {
+            $data = $this->department
+                ->where('name', 'like', '%' . $keyword . '%')
+                ->orWhere('author', 'like', '%' . $keyword . '%')
+                ->orWhereHas('hospital', function ($query) use ($keyword) {
+                    $query->where('name', 'like', '%' . $keyword . '%');
+                })
+                ->with('hospital')
+                ->paginate();
+        } else {
+            $data = $this->department->orderBy('id', 'desc')->with('hospital')->paginate();
+        }
         return response()->json($data);
     }
 
@@ -55,6 +69,7 @@ class DepartmentController extends ApiController
     public function store(DepartmentRequest $request)
     {
         $data = $request->all();
+        $data['author'] = $this->author();
         $this->department->create($data);
         return $this->success('添加成功');
     }
@@ -66,6 +81,7 @@ class DepartmentController extends ApiController
     public function update(DepartmentRequest $request)
     {
         $data = $request->all();
+        $data['author'] = $this->author();
         $department = $this->department->findOrFail($request->id);
         $department->update($data);
         return $this->success('修改成功');
@@ -74,7 +90,7 @@ class DepartmentController extends ApiController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destory()
+    public function destroy()
     {
         $department = $this->department->findOrFail($this->request->id);
         $department->delete();
@@ -89,5 +105,13 @@ class DepartmentController extends ApiController
         $ids = explode(',', $this->request->ids);
         $this->department->destroy($ids);
         return $this->success();
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkDepartmentName()
+    {
+        return $this->checkName('Department');
     }
 }

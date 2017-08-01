@@ -13,7 +13,7 @@ class Doctor extends Model
     /**
      * @var array
      */
-    protected $fillable =['name','doctor_num','department_id','status','author'];
+    protected $fillable =['name','doctor_num','department_id','status','author','description'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

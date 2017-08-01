@@ -17,7 +17,8 @@ class CreateMediaTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->unsignedInteger('hospital_id');
-            $table->string('author')->nullable();
+            $table->string('author','30')->nullable();
+            $table->string('description')->nullable();
             $table->unsignedTinyInteger('status')->default(1);
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
  * Class HospitalController
  * @package App\Api
  */
-class HospitalController
+class HospitalController extends ApiController
 {
     /**
      * @var Hospital
@@ -44,7 +44,17 @@ class HospitalController
      */
     public function index()
     {
-        $data = $this->hospital->with('department', 'disease', 'doctor', 'media', 'patient')->paginate();
+        $keyword = $this->request->keyword;
+        if ($keyword) {
+            $data = $this->hospital->where('name', 'like', '%' . $keyword . '%')
+                ->orWhere('group', 'like', '%' . $keyword . '%')
+                ->orWhere('author', 'like', '%' . $keyword . '%')
+                ->paginate()->toArray();
+        } else {
+            $data = $this->hospital->orderBy('id', 'desc')->paginate()->toArray();
+        }
+
+//        $data = $this->hospital->with('department', 'disease', 'doctor', 'media', 'patient')->paginate();
         return response()->json($data);
     }
 
@@ -56,11 +66,41 @@ class HospitalController
     public function store(HospitalRequest $request)
     {
         $data = $request->all();
+        $data['author'] = $this->author();
         $this->hospital->create($data);
         return $this->success('添加成功');
     }
 
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function group()
+    {
+        $data = $this->hospital->groupBy('group')->select('group')->get()->toArray();
+        $group = [];
+        foreach ($data as $v) {
+            $group[]['name'] = $v['group'];
+        }
+        return response()->json($group);
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkHospitalName()
+    {
+        return $this->checkName('Hospital');
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function list()
+    {
+        $data = $this->hospital->where('status', '1')->get();
+        return response()->json($data);
+    }
     /**
      * @param HospitalRequest $request
      * @return mixed
@@ -68,6 +108,7 @@ class HospitalController
     public function update(HospitalRequest $request)
     {
         $data = $request->all();
+        $data['author'] = $this->author();
         $hospital = $this->hospital->findOrFail($request->id);
         $hospital->update($data);
         return $this->success('修改成功');
@@ -76,7 +117,7 @@ class HospitalController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destory()
+    public function destroy()
     {
         $hospital = $this->hospital->findOrFail($this->request->id);
         $hospital->delete();

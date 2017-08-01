@@ -12,33 +12,57 @@
 */
 //登录
 Route::post('/user/login', '\App\Api\LoginController@login')->name('login');
-//Route::group(['middleware' => 'auth:api'], function () {
-//关闭登录检测
-Route::group(['middleware' => 'api'], function () {
+//Route::get('/hospitalgroup', '\App\Api\HospitalController@group');
+Route::group(['middleware' => 'auth:api'], function () {
     //部门管理
     Route::get('/depart', '\App\Api\DepartController@index')->name('depart.view');
 
     //医院管理
     Route::get('/hospital', '\App\Api\HospitalController@index')->name('hospital.view');
-
+    Route::get('/hospitalgroup', '\App\Api\HospitalController@group');
+    Route::get('/checkhospitalname', '\App\Api\HospitalController@checkHospitalName');
+    Route::post('/hospital/store', '\App\Api\HospitalController@store')->name('hospital.add');
+    Route::post('/hospital/update', '\App\Api\HospitalController@update')->name('hospital.edit');
+    Route::get('/hospital/remove', '\App\Api\HospitalController@destroy')->name('hospital.delete');
+    Route::get('/hospital/batchremove', '\App\Api\HospitalController@batchremove')->name('hospital.delete');
     //科室管理
     Route::get('/department', '\App\Api\DepartmentController@index')->name('department.view');
+    Route::get('/hospital/list', '\App\Api\HospitalController@list');
+    Route::get('/checkdepartmentname', '\App\Api\DepartmentController@checkDepartmentName');
+    Route::get('/hospitaldepartment', '\App\Api\DoctorController@getHospitalDepartment');
+    Route::post('/department/store', '\App\Api\DepartmentController@store')->name('department.add');
+    Route::post('/department/update', '\App\Api\DepartmentController@update')->name('department.edit');
+    Route::get('/department/remove', '\App\Api\DepartmentController@destroy')->name('department.delete');
+    Route::get('/department/batchremove', '\App\Api\DepartmentController@batchremove')->name('department.delete');
     //疾病管理
     Route::get('/disease', '\App\Api\DiseaseController@index')->name('disease.view');
     //媒体管理
+
     Route::get('/media', '\App\Api\MediaController@index')->name('media.view');
+    Route::get('/checkmedianame', '\App\Api\MediaController@checkMediaName');
+    Route::post('/media/store', '\App\Api\MediaController@store')->name('media.add');
+    Route::post('/media/update', '\App\Api\MediaController@update')->name('media.edit');
+    Route::get('/media/remove', '\App\Api\MediaController@destroy')->name('media.delete');
+    Route::get('/media/batchremove', '\App\Api\MediaController@batchremove')->name('media.delete');
+
+
     //预约管理
     Route::get('/patient', '\App\Api\PatientController@index')->name('patient.view');
     //医生管理
     Route::get('/doctor', '\App\Api\DoctorController@index')->name('doctor.view');
-
+    Route::get('/checkdoctorname', '\App\Api\DoctorController@checkDoctorName');
+    Route::get('/hospitaldepartment', '\App\Api\DoctorController@getHospitalDepartment');
+    Route::post('/doctor/store', '\App\Api\DoctorController@store')->name('doctor.add');
+    Route::post('/doctor/update', '\App\Api\DoctorController@update')->name('doctor.edit');
+    Route::get('/doctor/remove', '\App\Api\DoctorController@destroy')->name('doctor.delete');
+    Route::get('/doctor/batchremove', '\App\Api\DoctorController@batchremove')->name('doctor.delete');
     //获取用户登录信息
     Route::get('/userinfo', '\App\Api\UserController@userInfo');
     //获取用户权限
     Route::get('/userauth', '\App\Api\UserController@userAuth');
     //用户api
     Route::get('/user', '\App\Api\UserController@index')->name('user.view');
-    Route::get('/checkusername', '\App\Api\UserController@checkName');
+    Route::get('/checkusername', '\App\Api\UserController@checkUserName');
     Route::post('/user/upavatar', '\App\Api\UserController@upAvatar');
     Route::get('/checkuseremail', '\App\Api\UserController@checkEmail');
     Route::post('/user/store', '\App\Api\UserController@store')->name('user.add');
