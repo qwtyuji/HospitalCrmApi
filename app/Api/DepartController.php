@@ -44,7 +44,17 @@ class DepartController extends ApiController
      */
     public function index()
     {
-        $data = $this->depart->paginate();
+        $keyword = $this->request->keyword;
+        if ($keyword) {
+            $data = $this->depart->where('name', 'like', '%' . $keyword . '%')
+                ->orWhere('author', 'like', '%' . $keyword . '%')
+                ->paginate();
+        } else {
+            $data = $this->depart->orderBy('id', 'desc')->paginate();
+        }
+        $data->each(function ($item) {
+            $item->pidName = $this->depart->getParentName($item->pid);
+        });
         return response()->json($data);
     }
 
@@ -55,6 +65,7 @@ class DepartController extends ApiController
     public function store(DepartRequest $request)
     {
         $data = $request->all();
+        $data['author'] = $this->author();
         $this->depart->create($data);
         return $this->success('添加成功');
     }
@@ -66,6 +77,7 @@ class DepartController extends ApiController
     public function update(DepartRequest $request)
     {
         $data = $request->all();
+        $data['author'] = $this->author();
         $depart = $this->depart->findOrFail($request->id);
         $depart->update($data);
         return $this->success('修改成功');
@@ -89,6 +101,25 @@ class DepartController extends ApiController
         $ids = explode(',', $this->request->ids);
         $this->depart->destroy($ids);
         return $this->success();
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function list()
+    {
+        $data = $this->depart
+            ->where('status', 1)
+            ->select('id','name')->get();
+        return response()->json($data);
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkDepartName()
+    {
+        return $this->checkName('Depart');
     }
 
 }

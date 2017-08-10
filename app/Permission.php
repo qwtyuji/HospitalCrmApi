@@ -54,6 +54,14 @@ class Permission extends Model
             ['add_media', '添加媒体', '媒体管理'],
             ['edit_media', '编辑媒体', '媒体管理'],
             ['delete_media', '删除媒体', '媒体管理'],
+            ['view_depart', '查看部门', '部门管理'],
+            ['add_depart', '添加部门', '部门管理'],
+            ['edit_depart', '编辑部门', '部门管理'],
+            ['delete_depart', '删除部门', '部门管理'],
+            ['view_patient', '查看预约', '预约管理'],
+            ['add_patient', '添加预约', '预约管理'],
+            ['edit_patient', '编辑预约', '预约管理'],
+            ['delete_patient', '删除预约', '预约管理'],
         ];
     }
 }

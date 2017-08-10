@@ -20,12 +20,13 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = ['name', 'email', 'password', 'avatar', 'status','hospital_id','depart_id','is_depart_admin','is_hospital_admin','is_admin','ip','last_login_time','login_time','device','resolution'];
+    protected $fillable = ['name', 'email', 'password', 'avatar', 'status', 'hospital_id', 'depart_id', 'is_depart_admin', 'is_hospital_admin', 'is_admin', 'ip', 'last_login_time', 'login_time', 'device', 'resolution'];
 
     /**
      * @var string
      */
-    protected $guard_name='api';
+    protected $guard_name = 'api';
+
     /**
      * @param string $guard_name
      */
@@ -60,6 +61,11 @@ class User extends Authenticatable
     public function depart()
     {
         return $this->belongsTo(Depart::class);
+    }
+
+    public function userSet()
+    {
+        return $this->hasOne(UserSet::class);
     }
 
 }

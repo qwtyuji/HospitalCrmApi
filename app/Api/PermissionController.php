@@ -41,15 +41,9 @@ class PermissionController extends ApiController
      * 验证用户名唯一
      * @return \Illuminate\Http\JsonResponse
      */
-    public function checkName()
+    public function checkPermissionName()
     {
-        $data = $this->request->all();
-        if (isset($data['id'])) {
-            $rs = Permission::where('id', '<>', $data['id'])->where('name', $data['name'])->first();
-        } else {
-            $rs = Permission::where('name', $data['name'])->first();
-        }
-        return $this->check($rs);
+        return $this->checkName('Permission');
     }
 
     public function store()
@@ -59,7 +53,7 @@ class PermissionController extends ApiController
         ];
         $message = [
             'name.required' => '名称不能为空',
-            'name.unique' => '角色已经存在!不可重复添加',
+            'name.unique'   => '角色已经存在!不可重复添加',
         ];
         $this->validate($this->request, $rule, $message);
         Permission::create($this->request->all());
@@ -72,12 +66,12 @@ class PermissionController extends ApiController
         $rule = [
             'name' => [
                 'required',
-                Rule::unique('roles')->ignore($permission->id)
-            ]
+                Rule::unique('roles')->ignore($permission->id),
+            ],
         ];
         $messages = [
             'name.required' => '名称不能为空',
-            'name.unique' => '名称不能重复',
+            'name.unique'   => '名称不能重复',
         ];
         $this->validate($this->request, $rule, $messages);
         $permission->update($this->request->all());

@@ -49,12 +49,10 @@ class HospitalController extends ApiController
             $data = $this->hospital->where('name', 'like', '%' . $keyword . '%')
                 ->orWhere('group', 'like', '%' . $keyword . '%')
                 ->orWhere('author', 'like', '%' . $keyword . '%')
-                ->paginate()->toArray();
+                ->paginate();
         } else {
-            $data = $this->hospital->orderBy('id', 'desc')->paginate()->toArray();
+            $data = $this->hospital->orderBy('id', 'desc')->paginate();
         }
-
-//        $data = $this->hospital->with('department', 'disease', 'doctor', 'media', 'patient')->paginate();
         return response()->json($data);
     }
 

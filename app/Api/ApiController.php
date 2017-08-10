@@ -18,6 +18,26 @@ class ApiController extends Controller
     use AuthenticatesUsers;
     use Authorizable;
 
+    protected $hospitalId;
+
+    /**
+     * @return mixed
+     */
+    public function getHospitalId()
+    {
+        return $this->hospitalId;
+    }
+
+    /**
+     * @param mixed $hospitalId
+     */
+    public function setHospitalId($hospitalId)
+    {
+        $this->hospitalId = $hospitalId;
+    }
+
+
+
     //调用认证接口获取授权码
 
     /**

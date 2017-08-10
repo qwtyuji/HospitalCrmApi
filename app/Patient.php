@@ -141,7 +141,7 @@ class Patient extends Model
      */
     public function media()
     {
-        return $this->belongsTo(Media::class);
+        return $this->belongsTo(Media::class)->select('id','name');
     }
 
     /**
@@ -149,7 +149,7 @@ class Patient extends Model
      */
     public function depart()
     {
-        return $this->belongsTo(Depart::class);
+        return $this->belongsTo(Depart::class)->select('id','name');
     }
 
     /**
@@ -157,7 +157,7 @@ class Patient extends Model
      */
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->belongsTo(Doctor::class)->select('id','name');
     }
 
     /**
@@ -165,7 +165,7 @@ class Patient extends Model
      */
     public function department()
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Department::class)->select('id','name');
     }
 
     /**
@@ -173,7 +173,7 @@ class Patient extends Model
      */
     public function hospital()
     {
-        return $this->belongsTo(Hospital::class);
+        return $this->belongsTo(Hospital::class)->select('id','name');
     }
 
     /**
@@ -181,7 +181,7 @@ class Patient extends Model
      */
     public function disease()
     {
-        return $this->belongsTo(Disease::class);
+        return $this->belongsTo(Disease::class)->select('id','name');
     }
 
     /**
@@ -189,7 +189,7 @@ class Patient extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->select('id','name');
     }
 
 }

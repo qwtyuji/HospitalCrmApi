@@ -66,15 +66,9 @@ class RoleController extends ApiController
      * 验证名称唯一
      * @return \Illuminate\Http\JsonResponse
      */
-    public function checkName()
+    public function checkRoleName()
     {
-        $data = $this->request->all();
-        if (isset($data['id'])) {
-            $rs = Role::where('id', '<>', $data['id'])->where('name', $data['name'])->first();
-        } else {
-            $rs = Role::where('name', $data['name'])->first();
-        }
-        return $this->check($rs);
+        return $this->checkName('Role');
     }
 
     /**
