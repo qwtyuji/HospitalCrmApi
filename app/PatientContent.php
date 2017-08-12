@@ -17,13 +17,5 @@ class PatientContent extends Model
     /**
      * @var array
      */
-    protected $fillable = ['patient_id', 'user_id', 'chat_record', 'content'];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class)->select('id','name');
-    }
+    protected $fillable = ['patient_id', 'chat_record', 'content'];
 }

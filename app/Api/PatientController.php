@@ -51,6 +51,7 @@ class PatientController extends ApiController
     }
 
     /**
+     * 根据医院关键词查询预约列表
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
@@ -59,7 +60,7 @@ class PatientController extends ApiController
         $keyword = $this->request->keyword;
         $hospital = $this->request->hospital;
         if ($keyword) {
-            $data = $this->patient->where('hospital_id',$hospital)
+            $data = $this->patient->where('hospital_id', $hospital)
                 ->orWhereHas('hospital', function ($query) use ($keyword) {
                     $query->where('name', 'like', '%' . $keyword . '%');
                 })
@@ -78,11 +79,11 @@ class PatientController extends ApiController
                 ->orwhere('name', 'like', '%' . $keyword . '%')
                 ->orWhere('phone', 'like', '%' . $keyword . '%')
                 ->orWhere('age', 'like', '%' . $keyword . '%')
-                ->with('hospital', 'department', 'disease', 'doctor', 'user', 'media','depart', 'patientContent')
+                ->with('hospital', 'department', 'disease', 'doctor', 'user', 'media', 'depart', 'patientContent')
                 ->paginate();
         } else {
-            $data = $this->patient->orderBy('id', 'desc')->where('hospital_id',$hospital)
-                ->with('department', 'hospital', 'disease', 'doctor', 'user', 'media','depart', 'patientContent')
+            $data = $this->patient->orderBy('id', 'desc')->where('hospital_id', $hospital)
+                ->with('department', 'hospital', 'disease', 'doctor', 'user', 'media', 'depart', 'patientContent')
                 ->paginate();
         }
 //        dump(DB::getQueryLog());
@@ -91,19 +92,19 @@ class PatientController extends ApiController
                 $item->patientRemark[$key] = $v->created_at . ' ' . $v->user->name . ' ' . $v->content;
             });
             $item->patientLog->each(function ($v, $key) use ($item) {
-                $item->patientLog[$key] = $v->user->created_at . ' ' . $v->user->name . ' ' . $v->content;
+                $item->patientLog[$key] = $v->created_at . ' ' . $v->user->name . ' ' . $v->content;
             });
             $item->patientCallback->each(function ($v, $key) use ($item) {
-                $item->patientCallback[$key] = $v->user->created_at . ' ' . $v->user->name . ' ' . $v->content;
+                $item->patientCallback[$key] = $v->created_at . ' ' . $v->user->name . ' ' . $v->content;
             });
-            $item->each(function ($v) use ($item) {
-                $item->status = config('hupo.status')[$v->status];
-            });
+            $item->status_name = $this->patient->getPatientStatus($item->status);
+            $item->sex_name = $this->patient->getPatientSex($item->sex);
         });
         return response()->json($data);
     }
 
     /**
+     * 保存预约
      * @param StorePatientRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -116,11 +117,12 @@ class PatientController extends ApiController
         //备注
         $this->patientRemark($patient);
         //咨询内容
-        $this->patientContent($patient);
+        $this->patientSaveContent($patient);
         return $this->success('添加成功');
     }
 
     /**
+     * 更新预约
      * @param UpdatePatientRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -128,20 +130,22 @@ class PatientController extends ApiController
     {
         $data = $request->all();
         $data['user_id'] = Auth::id();
-        $patient = $this->patient->findOrFail($request->id);
-        $patient->update($data);
-        //增加记录
+        $patient = $this->patient->with('media','doctor','hospital','department','depart','disease','user')->findOrFail($request->id);
+        //修改记录
         $this->patientLog($data, $patient);
+        //修改主表
+        $patient->update($data);
         //备注
         $this->patientRemark($patient);
         //咨询内容
-        $this->patientContent($patient, $action = 'update');
+        $this->patientUpdateContent($patient);
         //回访
         $this->patientCallback($patient);
         return $this->success('修改成功');
     }
 
     /**
+     * 删除
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy()
@@ -152,6 +156,7 @@ class PatientController extends ApiController
     }
 
     /**
+     * 全选删除
      * @return \Illuminate\Http\JsonResponse
      */
     public function batchremove()
@@ -162,16 +167,20 @@ class PatientController extends ApiController
     }
 
     /**
-     * 修改操作增加记录
+     * 保存操作记录
      * @param $content
      */
     protected function patientLog($data, $patient)
     {
+
         $log = [
-            'user'    => $this->request->user(),
-            'content' => $this->patient->createLog($data, $patient),
+            'user_id'    => $this->request->user()->id,
+            'patient_id' => $this->request->id,
+            'content'    => $this->patient->createLog($data, $patient),
         ];
-        PatientLog::create($log);
+        if ($log['content']){
+            PatientLog::create($log);
+        }
     }
 
 
@@ -184,26 +193,32 @@ class PatientController extends ApiController
         $data['patient_id'] = $patient->id;
         $data['content'] = $this->request->get('remark');
         $data['user_id'] = Auth::id();
-        PatientRemark::create($data);
+        if ($data['content']){
+            PatientRemark::create($data);
+        }
     }
 
     /**
      * 保存咨询内容
      * @param $patient
      */
-    protected function patientContent($patient, $action = 'store')
+    protected function patientSaveContent($patient)
     {
-
-
         $data['content'] = $this->request->get('content');
         $data['chat_record'] = $this->request->get('chatlog');
-        $data['user_id'] = Auth::id();
-        $patientContent = new PatientContent($data);
-        if ($action == 'update') {
-            $patient->patientContent()->associate($patientContent);
-            $patient->save();
-        }
-        $patient->patientContent()->save($patientContent);
+        $patient->patientContent()->create($data);
+    }
+
+    /**
+     * 更新咨询内容
+     * @param $patient
+     */
+    protected function patientUpdateContent($patient)
+    {
+        $data['content'] = $this->request->get('content');
+        $data['chat_record'] = $this->request->get('chatlog');
+        $patientContent = PatientContent::firstOrCreate(['patient_id'=>$patient->id]);
+        $patientContent->update($data);
     }
 
     /**
@@ -215,10 +230,13 @@ class PatientController extends ApiController
         $data['patient_id'] = $patient->id;
         $data['content'] = $this->request->get('callback');
         $data['user_id'] = Auth::id();
-        PatientCallback::create($data);
+        if ($data['content']) {
+            PatientCallback::create($data);
+        }
     }
 
     /**
+     * 根据医院显示媒体
      * @return \Illuminate\Http\JsonResponse
      */
     public function mediaList()
@@ -235,6 +253,7 @@ class PatientController extends ApiController
     }
 
     /**
+     * 根据医院显示科室
      * @return \Illuminate\Http\JsonResponse
      */
     public function departmentList()
@@ -251,12 +270,13 @@ class PatientController extends ApiController
     }
 
     /**
+     * 根据科室显示医生列表
      * @return \Illuminate\Http\JsonResponse
      */
     public function doctorList()
     {
-        if ($this->request->department) {
-            $data = Doctor::where('department_id', $this->request->department)
+        if ($this->request->department_id) {
+            $data = Doctor::where('department_id', $this->request->department_id)
                 ->where('status', 1)
                 ->get();
         } else {
@@ -267,12 +287,13 @@ class PatientController extends ApiController
     }
 
     /**
+     * 根据科室显示疾病列表
      * @return \Illuminate\Http\JsonResponse
      */
     public function diseaseList()
     {
-        if ($this->request->department) {
-            $data = Disease::where('department_id', $this->request->department)
+        if ($this->request->department_id) {
+            $data = Disease::where('department_id', $this->request->department_id)
                 ->where('status', 1)
                 ->get();
         } else {

@@ -55,6 +55,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     //预约管理
     Route::get('/patient', '\App\Api\PatientController@index')->name('patient.view');
     Route::post('/patient/store', '\App\Api\PatientController@store')->name('patient.add');
+    Route::post('/patient/update', '\App\Api\PatientController@update')->name('patient.edit');
+    Route::get('/patient/remove', '\App\Api\PatientController@destroy')->name('patient.delete');
+    Route::get('/patient/batchremove', '\App\Api\PatientController@batchremove')->name('patient.delete');
 
     Route::get('/patient/medialist', '\App\Api\PatientController@mediaLIst');
     Route::get('/patient/departmentlist', '\App\Api\PatientController@departmentLIst');

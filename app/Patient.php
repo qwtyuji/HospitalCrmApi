@@ -36,7 +36,11 @@ class Patient extends Model
     /**
      * @var array
      */
-    protected $patientFieldRead = ['name', 'sex', 'age', 'phone', 'status',];
+    protected $patientFieldRead = ['name', 'sex', 'age', 'phone', 'status'];
+    /**
+     * @var array
+     */
+    protected $patientFieldransform = ['doctor_id', 'user_id', 'hospital_id', 'department_id', 'disease_id', 'depart_id', 'media_id',];
     /**
      * @var array
      */
@@ -44,11 +48,7 @@ class Patient extends Model
     /**
      * @var array
      */
-    protected $patientStatus = ['未到', '已到', '等待',];
-    /**
-     * @var array
-     */
-    protected $patientFieldransform = ['doctor_id', 'user_id', 'hospital_id', 'department_id', 'disease_id', 'depart_id', 'media_id',];
+    protected $patientStatus = ['未到', '已到', '等待'];
     /**
      * @var array
      */
@@ -63,31 +63,54 @@ class Patient extends Model
     ];
 
     /**
+     * @return array
+     */
+    public function getPatientSex($sex)
+    {
+        return $this->patientSex[$sex];
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getPatientStatus($status)
+    {
+        return $this->patientStatus[$status];
+    }
+
+
+
+    /**
      * @param $data
      * @param $paitent
      * @return string
      */
-    public function createLog($data, $paitent)
+    public function createLog($data, $patient)
     {
-        $rs = '';
-        foreach ($paitent as $key => $v) {
-            if ($data[$key] != $v) {
+        $logs = [];
+        foreach ($patient->toArray() as $key => $v) {
+            if (isset($data[$key]) && $data[$key] != $v) {
                 if (in_array($key, $this->patientFieldRead)) {
-                    $log = [
-                        $this->$patientKeyName[$key], $v, $data[$key],
-                    ];
+                    if ($key == 'sex') {
+                        $log = [$this->patientKeyName[$key], $this->patientSex[$v], $this->patientSex[$data[$key]]];
+                    } elseif ($key == 'status') {
+                        $log = [$this->patientKeyName[$key], $this->patientStatus[$v], $this->patientStatus[$data[$key]]];
+                    } else {
+                        $log = [$this->patientKeyName[$key], $v, $data[$key]];
+                    }
+                    $logs[] = '将 [' . $log[0] . '] 由 [' . $log[1] . '] 改为 [' . $log[2] . ']';
                 } else if (in_array($key, $this->patientFieldransform)) {
                     $log = [
-                        $this->$patientKeyName[$key],
+                        $this->patientKeyName[$key],
                         $this->getNameById($this->patientFieldModel[$key], $v),
                         $this->getNameById($this->patientFieldModel[$key], $data[$key]),
                     ];
+                    $logs[] = '将 [' . $log[0] . '] 由 [' . $log[1] . '] 改为 [' . $log[2] . ']';
                 }
-                $logs = '将' . $log[0] . '由' . $log[1] . '改为' . $log[2];
             }
-            $rs += $logs . "|";
-
         }
+        $rs = implode(',', $logs);
         return $rs;
     }
 
@@ -98,7 +121,8 @@ class Patient extends Model
      */
     public function getNameById($model, $id)
     {
-        return $model::where('id', $id)->value('name');
+        $models = 'App\\' . $model;
+        return $models::where('id', $id)->value('name');
     }
 
 
@@ -115,7 +139,7 @@ class Patient extends Model
      */
     public function patientContent()
     {
-        return $this->hasMany(PatientContent::class);
+        return $this->hasOne(PatientContent::class);
 
     }
 
@@ -141,7 +165,7 @@ class Patient extends Model
      */
     public function media()
     {
-        return $this->belongsTo(Media::class)->select('id','name');
+        return $this->belongsTo(Media::class)->select('id', 'name');
     }
 
     /**
@@ -149,7 +173,7 @@ class Patient extends Model
      */
     public function depart()
     {
-        return $this->belongsTo(Depart::class)->select('id','name');
+        return $this->belongsTo(Depart::class)->select('id', 'name');
     }
 
     /**
@@ -157,7 +181,7 @@ class Patient extends Model
      */
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class)->select('id','name');
+        return $this->belongsTo(Doctor::class)->select('id', 'name');
     }
 
     /**
@@ -165,7 +189,7 @@ class Patient extends Model
      */
     public function department()
     {
-        return $this->belongsTo(Department::class)->select('id','name');
+        return $this->belongsTo(Department::class)->select('id', 'name');
     }
 
     /**
@@ -173,7 +197,7 @@ class Patient extends Model
      */
     public function hospital()
     {
-        return $this->belongsTo(Hospital::class)->select('id','name');
+        return $this->belongsTo(Hospital::class)->select('id', 'name');
     }
 
     /**
@@ -181,7 +205,7 @@ class Patient extends Model
      */
     public function disease()
     {
-        return $this->belongsTo(Disease::class)->select('id','name');
+        return $this->belongsTo(Disease::class)->select('id', 'name');
     }
 
     /**
@@ -189,7 +213,7 @@ class Patient extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class)->select('id','name');
+        return $this->belongsTo(User::class)->select('id', 'name');
     }
 
 }
